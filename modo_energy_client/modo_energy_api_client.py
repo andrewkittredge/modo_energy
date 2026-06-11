@@ -95,6 +95,7 @@ class ModoEnergyAPIClient:
         params = {
             "date_from": date_from.strftime("%Y-%m-%d"),
             "date_to": date_to.strftime("%Y-%m-%d"),
+            "limit": 10_000,
         }
         df = self.get_paginated(endpoint, params)
         df["timestamp"] = pd.to_datetime(df["timestamp"])
