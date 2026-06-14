@@ -126,3 +126,21 @@ class ModoEnergyAPIClient:
         df = self.get_paginated(endpoint, params)
         df["date"] = pd.to_datetime(df["date"]).dt.normalize()
         return df
+
+    def get_ercot_prices(self, date_from: date, date_to: date) -> pd.DataFrame:
+        """
+        Fetches ERCOT day-ahead market historical settlement prices.
+        Accepts date_from and date_to as date objects.
+        """
+        endpoint = "us/ercot/dam/historical-prices"
+        params = {
+            "date_from": date_from.strftime("%Y-%m-%d"),
+            "date_to": date_to.strftime("%Y-%m-%d"),
+            "limit": 10_000,
+        }
+        df = self.get_paginated(endpoint, params)
+        df["deliveryDate"] = pd.to_datetime(
+            df["deliveryDate"] + "-" + (df["hourEnding"] - 1).astype(str)
+        )
+        df.set_index("deliveryDate", inplace=True)
+        return df
