@@ -1,5 +1,6 @@
 import snowflake.connector
-from snowflake_credentials import (
+
+from noaa.snowflake_credentials import (
     ACCOUNT,
     DATABASE,
     ROLE,
@@ -34,7 +35,7 @@ def get_noaa_weather_data():
     """
 
     try:
-        conn = snowflake.connector.connect(
+        with snowflake.connector.connect(
             account=ACCOUNT,
             user=USER,
             token=TOKEN,
@@ -43,13 +44,11 @@ def get_noaa_weather_data():
             database=DATABASE,
             schema=SCHEMA,
             role=ROLE,
-        )
-        cursor = conn.cursor()
-        cursor.execute(query)
-        results = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return results
+        ) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query)
+                return cursor.fetch_pandas_all()
+
     except Exception as e:
         print(f"Error fetching data from Snowflake: {e}")
         return None
