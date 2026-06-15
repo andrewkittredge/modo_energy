@@ -1,2 +1,3 @@
 *.pyc
 *.sqlite
+noaa/snowflake_credentials.py
