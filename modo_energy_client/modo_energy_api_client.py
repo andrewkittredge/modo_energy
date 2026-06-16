@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import time
 from datetime import date
 from typing import Any, Dict, Optional
@@ -9,12 +10,22 @@ import pandera as pa
 import requests
 import requests_cache
 from pandera.typing import DataFrame as pandera_DataFrame
+from tenacity import (
+    Retrying,
+    before_sleep_log,
+    stop_after_attempt,
+    wait_exponential,
+)
 from tqdm.auto import tqdm
 
 from modo_energy_client.schemas.ERCOT_BESS_owners_schema import ERCOT_BESS_Owners_Schema
 from modo_energy_client.schemas.ERCOT_generation_fuel_mix_schema import (
     ERCOTGenerationFuelMixSchema,
 )
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+logger.setLevel(logging.WARNING)
 
 
 class ModoEnergyAPIClient:
@@ -49,30 +60,25 @@ class ModoEnergyAPIClient:
 
         with tqdm(total=None, desc="Fetching pages ", unit="page") as pbar:
             while url:
-                while True:
-                    try:
+                for attempt in Retrying(
+                    wait=wait_exponential(multiplier=2, min=1, max=1000),
+                    stop=stop_after_attempt(10),
+                    before_sleep=before_sleep_log(logger, logging.WARNING),
+                ):
+                    with attempt:
                         response = self._session.get(
                             url,
                             headers={"accept": "application/json"},
                             params=params,
                         )
                         response.raise_for_status()
-                        break
-                    except requests.exceptions.HTTPError as e:
-                        if response.status_code == 403:
-                            logging.warning(
-                                "Received 403 Forbidden. Sleeping for 65 seconds before retrying..."
+
+                        data = response.json()
+                        if "results" in data:
+                            df = pd.concat(
+                                [df, pd.DataFrame(data["results"])], ignore_index=True
                             )
-                            time.sleep(65)
-                            continue
-                        else:
-                            raise
-                data = response.json()
-                if "results" in data:
-                    df = pd.concat(
-                        [df, pd.DataFrame(data["results"])], ignore_index=True
-                    )
-                url = data.get("next")
+                        url = data.get("next")
                 params = None  # Only use params on first request
 
                 pbar.update(1)
