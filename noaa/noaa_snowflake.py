@@ -34,24 +34,19 @@ def get_noaa_weather_data():
         SI.NOAA_WEATHER_STATION_NAME
     """
 
-    try:
-        with snowflake.connector.connect(
-            account=ACCOUNT,
-            user=USER,
-            token=TOKEN,
-            authenticator="programmatic_access_token",
-            warehouse=WAREHOUSE,
-            database=DATABASE,
-            schema=SCHEMA,
-            role=ROLE,
-        ) as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(query)
-                data = cursor.fetch_pandas_all()
-                data = data.pivot(index="DATE", columns="VARIABLE_NAME", values="VALUE")
-                data.index = data.index.astype("datetime64[ns]")
-                return data
-
-    except Exception as e:
-        print(f"Error fetching data from Snowflake: {e}")
-        return None
+    with snowflake.connector.connect(
+        account=ACCOUNT,
+        user=USER,
+        token=TOKEN,
+        authenticator="programmatic_access_token",
+        warehouse=WAREHOUSE,
+        database=DATABASE,
+        schema=SCHEMA,
+        role=ROLE,
+    ) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            data = cursor.fetch_pandas_all()
+            data = data.pivot(index="DATE", columns="VARIABLE_NAME", values="VALUE")
+            data.index = data.index.astype("datetime64[ns]")
+            return data
