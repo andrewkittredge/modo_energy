@@ -15,4 +15,6 @@ dependencies = [
     "statsmodels>=0.14.6",
     "snowflake-connector-python[pandas]==4.4.0",
     "tqdm>=4.68.2",
+    "pandera>=0.31.1",
+    "ipympl>=0.10.0",
 ]

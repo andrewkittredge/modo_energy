@@ -47,15 +47,11 @@ def get_noaa_weather_data():
         ) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query)
-                return cursor.fetch_pandas_all()
+                data = cursor.fetch_pandas_all()
+                data = data.pivot(index="DATE", columns="VARIABLE_NAME", values="VALUE")
+                data.index = data.index.astype("datetime64[ns]")
+                return data
 
     except Exception as e:
         print(f"Error fetching data from Snowflake: {e}")
         return None
-
-
-if __name__ == "__main__":
-    data = get_noaa_weather_data()
-    if data:
-        for row in data:
-            print(row)
