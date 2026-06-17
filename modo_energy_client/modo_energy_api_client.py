@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-import time
 from datetime import date
 from typing import Any, Dict, Optional
 
@@ -109,7 +108,7 @@ class ModoEnergyAPIClient:
         return df
 
     @pa.check_types
-    def get_ercot_modo_owners(
+    def ercot_bess_owners(
         self, date_from: date, date_to: date, **kwargs
     ) -> pandera_DataFrame[ERCOT_BESS_Owners_Schema]:
         """
