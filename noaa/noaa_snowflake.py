@@ -1,4 +1,5 @@
 from datetime import date
+from typing import TYPE_CHECKING
 
 import snowflake.connector
 
@@ -11,6 +12,9 @@ from noaa.snowflake_credentials import (
     USER,
     WAREHOUSE,
 )
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def get_noaa_weather_data(
@@ -32,7 +36,7 @@ def get_noaa_weather_data(
         JOIN PUBLIC_DATA.NOAA_WEATHER_STATION_INDEX SI ON TS.NOAA_WEATHER_STATION_ID = SI.NOAA_WEATHER_STATION_ID
     WHERE
         SI.NOAA_WEATHER_STATION_ID = %(noaa_weather_station_id)s
-        AND TS.VARIABLE_NAME IN ('Average daily wind speed', 'Maximum temperature')
+        AND TS.VARIABLE_NAME IN ('Average daily wind speed')
         AND TS.DATE BETWEEN TO_DATE(%(start_date)s) AND TO_DATE(%(end_date)s)
     ORDER BY
         TS.DATE DESC,
