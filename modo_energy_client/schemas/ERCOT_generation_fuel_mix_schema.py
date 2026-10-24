@@ -6,7 +6,7 @@ from pandera.typing import Index, Series
 
 
 class ERCOTGenerationFuelMixSchema(pa.DataFrameModel):
-    timestamp: Index[Annotated[pd.DatetimeTZDtype, "us", "UTC"]]
+    timestamp: Index[Annotated[pd.DatetimeTZDtype, "ns", "UTC"]]
     coalAndLignite: Series[float]
     hydro: Series[float]
     naturalGas: Series[float]
