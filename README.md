@@ -19,8 +19,3 @@ uv sync
 cp .env.example .env  # then fill in the Modo token and Snowflake credentials
 uv run jupyter lab analysis.ipynb
 ```
-
-Both modules load `.env` automatically via python-dotenv.
-
-With `ModoEnergyAPIClient(cache_requests=True)` responses are cached in `MODO_API_CACHE.sqlite`
-(git-ignored). Delete the file to refetch.
