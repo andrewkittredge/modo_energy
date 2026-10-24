@@ -2,7 +2,7 @@
 
 Demo client for the [Modo Energy API](https://developers.modoenergy.com/docs/getting-started)
 plus a notebook modelling intra-day arbitrage spread in the ERCOT day-ahead market as a
-function of wind speed and installed BESS capacity.
+function of installed BESS capacity.
 
 ## Layout
 
