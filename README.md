@@ -7,7 +7,6 @@ function of installed BESS capacity.
 ## Layout
 
 - `modo_energy_client/` - `ModoEnergyAPIClient`: paginated, retrying, optionally cached requests with pandera-validated responses.
-- `noaa/` - pulls NOAA daily weather data from Snowflake.
 - `analysis.ipynb` - the Prophet model and plots.
 
 ## Setup
